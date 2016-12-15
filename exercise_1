@@ -1,0 +1,25 @@
+# -*- coding: UTF-8 -*-
+
+import urllib2
+import re
+
+count = 0
+url = "http://www.heibanke.com/lesson/crawler_ex00/"
+response = urllib2.urlopen(url)
+count += 1
+text = response.read()
+print text
+pattern = re.compile(u'(?<=数字)\d{5}')
+match = re.search(pattern, text.decode('utf8'))
+number = match.group(0)
+while (True):
+    url = "http://www.heibanke.com/lesson/crawler_ex00/"
+    url = url + number
+    print "已进行", count, "次访问", "此次将访问的地址为", url
+    response = urllib2.urlopen(url)
+    count += 1
+    text = response.read()
+    print text
+    pattern = re.compile(u'(?<=数字是)\d{5}')
+    match = re.search(pattern, text.decode('utf8'))
+    number = match.group(0)
