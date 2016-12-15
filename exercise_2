@@ -1,0 +1,20 @@
+# -*- coding: UTF-8 -*-
+import urllib
+import urllib2
+import re
+
+url = 'http://www.heibanke.com/lesson/crawler_ex01/'
+
+for password in range(0, 30):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
+    values = {'username': 'flowell',
+              'password': password}
+    data = urllib.urlencode(values)
+    request = urllib2.Request(url, data, headers)
+    response = urllib2.urlopen(request)
+    page = response.read()
+    pattern = re.compile(u'<h3>您输入的密码错误, 请重新输入</h3>')
+    match = re.search(pattern, page.decode('utf8'))
+    if match is None:
+        print 'password is ', password
+        break
