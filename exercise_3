@@ -1,0 +1,28 @@
+# -*- coding: UTF-8 -*-
+import requests
+
+url1 = 'http://www.heibanke.com/accounts/login'
+url2 = 'http://www.heibanke.com/lesson/crawler_ex02'
+wrongNotify = '您输入的密码错误, 请重新输入'
+
+s = requests.Session()
+s.get(url1)
+csrftoken1 = s.cookies['csrftoken']
+data1 = {'username': 'flowell',
+         'password': 'LJY83122135',
+         'csrfmiddlewaretoken': csrftoken1}
+s.post(url1, data = data1)
+
+for password in range(0, 30):
+    s.post(url2)
+    csrftoken2 = s.cookies['csrftoken']
+    data2 = {'username': 'username',
+             'password': password,
+             'csrfmiddlewaretoken': csrftoken2}
+    result = s.post(url2, data = data2)
+    if wrongNotify in result.content:
+        print "password ", password ," is wrong."
+    else:
+        print "password is ", password
+        print result.content
+        break
