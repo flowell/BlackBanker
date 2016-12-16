@@ -1,0 +1,53 @@
+# -*- coding: UTF-8 -*-
+import re
+import requests
+from bs4 import BeautifulSoup
+from threading import Thread
+import time
+
+login_url = 'http://www.heibanke.com/accounts/login'
+list_url = 'http://www.heibanke.com/lesson/crawler_ex03/pw_list/'
+
+
+def login():
+    s = requests.Session()
+    s.get(login_url)
+    csrftoken = s.cookies['csrftoken']
+    login_data = {'username': 'flowell',
+                  'password': 'LJY83122135',
+                  'csrfmiddlewaretoken': csrftoken}
+    s.post(url=login_url, data=login_data)
+    print "Loging in successfully."
+    return s
+
+
+class MyThread(Thread):
+    def __init__(self, s):
+        Thread.__init__(self)
+        self.s = s
+
+    def run(self):
+        global count
+        global password
+        pattern = re.compile('.*(\d*)<.*')
+        while count < 100:
+            result = s.get(list_url)
+            soup = BeautifulSoup(result.content, 'html.parser')
+            pos_list = soup.findAll('td', {'title': 'password_pos'})
+            val_list = soup.findAll('td', {'title': 'password_val'})
+            if len(pos_list) > 0:
+                for i in range(0, len(pos_list)):
+                    if password[int(pos_list[i].string)-1] == 'x':
+                        password[int(pos_list[i].string)-1] = val_list[i].string
+                        count += 1
+                print self.name, '访问成功,', '累计已成功获取密码', count, '位'
+        print ''.join(password)
+
+if __name__ == '__main__':
+    time1 = time.time()
+    password = ['x' for i in range(0, 100)]
+    s = login()
+    count = 0
+    for i in range(0, 20):
+        thread = MyThread(s)
+        thread.start()
